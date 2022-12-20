@@ -1,0 +1,12 @@
+pandas
+# gspread
+# oauth2client
+bs4
+requests==2.6.0
+PyMySQL
+pymongo[srv]
+scrapy
+#git+https://github.com/mercadolibre/python-sdk.git
+pyopenssl==22.0.0
+tabulate
+crochet

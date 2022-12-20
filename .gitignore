@@ -1,0 +1,6 @@
+/venv
+*.pyc
+!spec/*.pyc
+mongo.py
+notes
+archivo.json
