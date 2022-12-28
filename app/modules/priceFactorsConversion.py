@@ -8,14 +8,16 @@ def priceFactorsConversion(usd_total,seller_id,databaseName,meli_site_id):
     objectDataLog = DataLogManager(databaseName)
     dataUser = objectDataLog.extractUserData(seller_id)  #Trae parameters
     TRM  = dataUser.loc[0,'trm']
+    factor_range_1 = float(dataUser.loc[0,'factor_range_1'])
+    factor_range_2 = float(dataUser.loc[0,'factor_range_2'])
  
-    if usd_total < 50:
+    if usd_total < factor_range_1:
         FACTOR = dataUser.loc[0, "factor_high_meli"]  # 1 - 49.99 usd_total
         FACTOR_MSHOPS = dataUser.loc[0, "factor_high_mshops"]
-    elif usd_total >= 50 and usd_total < 100:
+    elif usd_total >= factor_range_1 and usd_total < factor_range_2:
         FACTOR = dataUser.loc[0, "factor_medium_meli"]   #50 - 99.99 usd_total
         FACTOR_MSHOPS = dataUser.loc[0, "factor_medium_mshops"]
-    elif usd_total >= 100:
+    elif usd_total >= factor_range_2:
         FACTOR = dataUser.loc[0, "factor_low_meli"]   # >100 USD
         FACTOR_MSHOPS = dataUser.loc[0, "factor_low_mshops"]
     

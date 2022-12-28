@@ -255,6 +255,42 @@ class DataLogManager:
                     ##self.cursor.close()
                     self.connection.close()
 
+    
+    def updateAnyTable(self,table, id_value, name_primary_key, **dict_to_update):
+        """
+        
+        """
+        sql = f"UPDATE {table} SET "
+        keys = dict_to_update.keys()
+        
+        for key in keys:
+            if type(dict_to_update[key]) != str:
+                sql += f"{key} = {dict_to_update[key]}, "
+            else:
+                sql += f"{key} = '{dict_to_update[key]}', "
+                
+        sql = sql[:-2] 
+
+        if type(id_value) != str:     
+            sql += f" WHERE {name_primary_key} = {id_value}"
+        else:
+            sql += f" WHERE {name_primary_key} = '{id_value}'"
+        
+        print(sql)
+        try:
+            self.cursor.execute(sql)
+            self.connection.commit() #Guarda Cambios
+            #self.connection.close() #cerramosconexion <<<<
+            #Persistencia del update, inset o delete
+            print('\nRegistro enviado a Base de datos AWS!\n')
+        except Exception as e:
+            print(f'hubo un error en updateAnyTable: {e}')
+            #raise  
+        finally:
+                if self.connection.open:
+                    ##self.cursor.close()
+                    self.connection.close()
+
 
 
     def dfToTableDB(self, table, df):
@@ -740,6 +776,100 @@ class DataLogManager:
                 if self.connection.open:
                     #self.cursor.close()
                     self.connection.close()
+
+    def productsToUpdate(self,seller_id):  #Extraer datos de la Meli_Account X
+       
+        sql = f"""select * from products_info_customers where seller_id = {seller_id} and app_status = 1"""
+
+        again = 0
+        while again == 0:
+
+            try:                
+                df = pd.read_sql(sql, self.connection)
+                again = 1
+                return df
+            except pymysql.Error as error:
+                print(error)
+                self.connection.rollback()
+                print(f"Failed to make query")
+            except NameError as error:
+                print(error)
+            finally:   
+                if self.connection.open:
+                    self.cursor.close()
+                    self.connection.close()
+                    print("MySQL connection is closed")
+    
+    
+    def getSubscriptions(self,seller_id):  #Extraer datos de la Meli_Account X
+       
+        sql = f"""select * from subscriptions where seller_id = {seller_id} """
+
+        again = 0
+        while again == 0:
+
+            try:                
+                df = pd.read_sql(sql, self.connection)
+                again = 1
+                return df
+            except pymysql.Error as error:
+                print(error)
+                self.connection.rollback()
+                print(f"Failed to make query")
+            except NameError as error:
+                print(error)
+            finally:   
+                if self.connection.open:
+                    self.cursor.close()
+                    self.connection.close()
+                    print("MySQL connection is closed")
+
+
+    def getSchedule(self,seller_id):  #
+       
+        sql = f"""select * from update_schedule where seller_id = {seller_id} """
+
+        again = 0
+        while again == 0:
+
+            try:                
+                df = pd.read_sql(sql, self.connection)
+                again = 1
+                return df
+            except pymysql.Error as error:
+                print(error)
+                self.connection.rollback()
+                print(f"Failed to make query")
+            except NameError as error:
+                print(error)
+            finally:   
+                if self.connection.open:
+                    self.cursor.close()
+                    self.connection.close()
+                    print("MySQL connection is closed")
+
+    def getScheduleByDate(self,date_start,hour_start):  #
+       
+        sql = f"""select * from update_schedule where date_start = '{date_start}' and hour_start = '{hour_start}' """
+
+        again = 0
+        while again == 0:
+
+            try:                
+                df = pd.read_sql(sql, self.connection)
+                again = 1
+                return df
+            except pymysql.Error as error:
+                print(error)
+                self.connection.rollback()
+                print(f"Failed to make query")
+            except NameError as error:
+                print(error)
+            finally:   
+                if self.connection.open:
+                    self.cursor.close()
+                    self.connection.close()
+                    print("MySQL connection is closed")
 
 
 
