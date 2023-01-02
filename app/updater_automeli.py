@@ -102,8 +102,12 @@ class UpdaterSpider(scrapy.Spider):
         self.df = objectDataLog.productsToUpdate(seller_id)  #Trae todo products_info_customers
         print(f'self.df.shape: {self.df.shape}')
 
-        inicio = (pack1000-1)*1000
-        fin =  (pack1000)*1000
+        inicio = 0
+        fin = 0
+
+        if pack1000 <= quantity_pack1000:
+            inicio = (pack1000-1)*1000
+            fin =  (pack1000)*1000
 
         cantidad_real_productos = self.df.shape[0]  #cantidad real de productos listos a actualizar
 
@@ -382,11 +386,18 @@ class UpdaterSpider(scrapy.Spider):
 
             if (USD_total == total_price_anterior): 
 
-                # if (available_quantity == available_quantity_anterior):
+                if (available_quantity == available_quantity_anterior):
+                    to_update["changed"] = '--' 
+                elif(available_quantity == 0):
+                    to_update["changed"] = 'Agotado' 
+                elif(available_quantity > available_quantity_anterior):
+                    to_update["changed"] = '+ Stock'   
+                elif(available_quantity < available_quantity_anterior):
+                    to_update["changed"] = '- Stock' 
                 # Dado que ambas se cumplen!
                 print('\n @ Precio sigue igual @')
                                 
-                to_update["changed"] = '--'       
+                    
                 print("DATA DICT TO UPDATE: ", to_update)
                 for indice in buscar_index:
                     id_meli = self.df.loc[indice, "id_meli"]
@@ -401,7 +412,7 @@ class UpdaterSpider(scrapy.Spider):
                 elif USD_total < total_price_anterior:
                     to_update["changed"] = 'Bajó'
                 if available_quantity == 0:
-                    to_update["changed"] = '--'
+                    to_update["changed"] = 'Agotado'
 
             
                 print("DATA DICT TO UPDATE: ", to_update)

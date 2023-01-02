@@ -23,7 +23,8 @@ def handler(event, context):  #event, context
         seller_id = body['seller_id']
         pack1000 = body['pack1000']
         quantity_pack1000 = body['quantity_pack1000']
-    except:
+    except Exception as e:
+        print(f'error: {e}')
         primary_key = 0
         seller_id = 0
         pack1000 = 0
