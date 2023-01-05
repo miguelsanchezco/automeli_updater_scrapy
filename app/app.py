@@ -35,6 +35,7 @@ def handler(event, context):  #event, context
     print(f'\nFECHA: {date}')
     dict_to_update = {}
     dict_to_update['status_scrapy'] = 'Started'
+    dict_to_update['status'] = 'Procesando...'
     table = 'update_schedule'
     dataBaseName = 'ecommerce_prueba'
     objectMysql = DataLogManager(dataBaseName)

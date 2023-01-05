@@ -411,7 +411,10 @@ class UpdaterSpider(scrapy.Spider):
                     to_update["changed"] = 'Subió'
                 elif USD_total < total_price_anterior:
                     to_update["changed"] = 'Bajó'
-                if available_quantity == 0:
+
+                if (available_quantity == available_quantity_anterior) and available_quantity == 0:
+                    to_update["changed"] = '--'
+                elif available_quantity == 0:
                     to_update["changed"] = 'Agotado'
 
             
