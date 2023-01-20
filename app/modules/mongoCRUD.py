@@ -2,7 +2,7 @@
 from datetime import datetime
 from pymongo import MongoClient
 
-def mongoSaveProduct(sku ,amazon_site, site_id, seller_id, meli_sale_price, meli_regular_price, scraped_price, stock_quantity, shippingCost, taxes, title, images, id_meli_category, currencyMeli):
+def mongoSaveProduct(sku ,amazon_site, site_id, seller_id, meli_sale_price, meli_regular_price, scraped_price, stock_quantity, shippingCost, taxes, title, images, id_meli_category, currencyMeli, geo_result_id):
 #   mongoSaveProduct(sku ,'amazon.com', self.meli_site_id, self.seller_id,  meli_price, scraped_price, available_quantity, shippingCost ,taxes , '' , {}, '', '' )
     client = MongoClient("mongodb+srv://justmarketco:IAtd0PM41q9YBPUL@automelimong0.etafi.mongodb.net/automeli?retryWrites=true&w=majority")
     db = client['automeli']
@@ -113,8 +113,8 @@ def mongoSaveProduct(sku ,amazon_site, site_id, seller_id, meli_sale_price, meli
        
     # else:
         
-        # # #AGREGAMOS prices de amazon segun amazon_site and  site_id
-    query = {"sku":sku, "amazon_sites.amazon_site":amazon_site, "amazon_sites.site_id":site_id }
+        # # #AGREGAMOS prices de amazon segun amazon_site and  geo_result_id
+    query = {"sku":sku, "amazon_sites.amazon_site":amazon_site, "amazon_sites.site_id":geo_result_id }
         # response = collectionProducts.find_one(query)
         # #print(response)
         # if response == None:

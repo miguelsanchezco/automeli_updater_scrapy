@@ -1,7 +1,7 @@
 '''
     Scrapy
     Scrapeamos los precios de los productos en products_info : Base de Datos AWS
-    Last Updated: 21/12/2022
+    Last Updated: 17/01/2023
 
 '''
 from modules.priceFactorsConversion import priceFactorsConversion
@@ -67,6 +67,7 @@ class UpdaterSpider(scrapy.Spider):
     df = []
     amazon_site  = ''
     meli_site_id = ''
+    geo_result_id = ''
     zip_code = '00000'
     seller_id = ''  
     mtactive = 0
@@ -134,24 +135,26 @@ class UpdaterSpider(scrapy.Spider):
         #print(f'dataUser: {self.dataUser}')
         self.amazon_site  = self.dataUser.loc[0,'amazon_site']
         self.meli_site_id = self.dataUser.loc[0,'meli_site_id']
+        self.geo_result_id = self.dataUser.loc[0,'geo_result_id']
         self.zip_code = self.dataUser.loc[0,'zip_code']
         self.mtactive  = self.dataUser.loc[0,'manufacturing_time_active']
+        self.free_shipping_promo  = self.dataUser.loc[0,'free_shipping_promo']
         self.mtauto = self.dataUser.loc[0,'manufacturing_time_auto']
         self.mtdays = self.dataUser.loc[0,'manufacturing_time_days']
         self.use_locker =  int(self.dataUser.loc[0,'use_locker'])
         self.meli_currency = self.dataUser.loc[0,'meli_currency']
-        if self.meli_site_id == 'MLM': 
+        if self.geo_result_id == 'MLM': 
             self.countryName = 'México Mexico'
-        elif self.meli_site_id == 'MCO':
+        elif self.geo_result_id == 'MCO':
             self.countryName = 'Colombia'
-        elif self.meli_site_id == 'MLA':
+        elif self.geo_result_id == 'MLA':
             self.countryName = 'Argentina'
-        elif self.meli_site_id == 'MLC':
+        elif self.geo_result_id == 'MLC':
             self.countryName = 'Chile'
-        elif self.meli_site_id == 'MEC':
+        elif self.geo_result_id == 'MEC':
             self.countryName = 'Ecuador'
         else:
-            self.countryName = 'address dirección'
+            self.countryName = self.zip_code #Estados Unidos
 
         for sku in self.df["sku"]:
             
@@ -177,7 +180,7 @@ class UpdaterSpider(scrapy.Spider):
     # Funcion Start Request
     def start_requests(self):
 
-        self.COOKIES,self.idcookie = cookiesRefresh(0,self.seller_id,self.amazon_site,self.meli_site_id,self.zip_code)
+        self.COOKIES,self.idcookie = cookiesRefresh(0,self.seller_id,self.amazon_site,self.geo_result_id,self.zip_code)
         print(f'len(self.urls): {len(self.urls)}')
         for index, url in enumerate(self.urls):
             
@@ -296,7 +299,7 @@ class UpdaterSpider(scrapy.Spider):
         # MODULO QUE CALCULA PRECIO, AVAILABLE_Q AND MANUF_TIME
       
         [scraped_price,available_quantity,MANUFACTURING_TIME,weight,volume,pesoVol,maxWeigth,
-        USD_total,country,vendedor,despachador,shippingCost,taxes] = selectores_css(response,maxWeigth,self.mtactive,self.mtauto,self.mtdays,self.use_locker,self.meli_site_id)
+        USD_total,country,vendedor,despachador,shippingCost,taxes] = selectores_css(response,maxWeigth,self.mtactive,self.mtauto,self.mtdays,self.use_locker,self.geo_result_id,self.free_shipping_promo)
 
         # # price_to_meli = int(round(price_to_meli))
         to_update = {}
@@ -364,7 +367,7 @@ class UpdaterSpider(scrapy.Spider):
         
     
         
-        if  self.countryName in country or self.zip_code in country:
+        if (self.countryName in country or country in self.countryName or self.zip_code in country):
             #Diccionario donde se almacenara la data a exportar
             print(f'country or city:{country}')
             # comparacion precio anterior y actual
@@ -382,7 +385,7 @@ class UpdaterSpider(scrapy.Spider):
             #print(f'PRECIOOOO NUEVO {sku}: {scraped_price}\n\n\n')
             
             #GUARDO EN MONGODB
-            mongoSaveProduct(sku ,'amazon.com', self.meli_site_id, self.seller_id,  meli_sale_price, meli_regular_price, to_update["scraped_price"], available_quantity, to_update["shipping_cost"] ,to_update["taxes"] , '' , {}, '', '' )
+            mongoSaveProduct(sku ,'amazon.com', self.meli_site_id, self.seller_id,  meli_sale_price, meli_regular_price, to_update["scraped_price"], available_quantity, to_update["shipping_cost"] ,to_update["taxes"] , '' , {}, '', '', self.geo_result_id )
 
             if (USD_total == total_price_anterior): 
 

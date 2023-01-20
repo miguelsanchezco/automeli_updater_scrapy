@@ -31,7 +31,7 @@ import math
 # Si estoy actualizando precios, pasar valor de maxWeigth
 # Si estoy scrapeando el producto por primera vez, enviar maxWeigth = 0
 
-def priceCalculator(response, maxWeigth,use_locker,meli_site_id):    
+def priceCalculator(response, maxWeigth,use_locker,geo_result_id, free_shipping_promo):    
     
     ''' [Paso 0.] Extraer precio en Dolares '''
 
@@ -74,6 +74,7 @@ def priceCalculator(response, maxWeigth,use_locker,meli_site_id):
                 #print(price)
 
         n_items = len(price)
+        print(f'n_items: {n_items}')
         #price es una lista de 1, 2 o 4 elementos.
 
         if n_items == 2:
@@ -89,6 +90,8 @@ def priceCalculator(response, maxWeigth,use_locker,meli_site_id):
                     print('Producto con dos precios, se toma el mas alto!!!')
             except:
                 pass
+        elif n_items > 4:
+            USD = price[0].replace(",","") #eliminamos las (,) Precios >999USD
         else:
             print('Item sin precio!')
             USD = 0 # para informar que no se publique el item
@@ -313,29 +316,38 @@ def priceCalculator(response, maxWeigth,use_locker,meli_site_id):
     condicionalEnvioGratis = response.css('span[data-csa-c-mir-sub-type="CONDITIONALLY_FREE"]')
     print('condicional ',condicionalEnvioGratis)
     if condicionalEnvioGratis != []:
-        freeShipping35USD = True
-        print('Envios Gratis por compras mayores a 35USD: ',freeShipping35USD)
+        print('free_shipping_promo:',free_shipping_promo)
+        if int(free_shipping_promo) == 1: #EL usario decide si quiere usar la promo o no
+            freeShipping35USD = True
+            print('Envios Gratis por compras mayores a XX USD: ',freeShipping35USD)
+        else:
+            freeShipping35USD = False
+            print('USUARIO NO QUIERE Envios Gratis por compras mayores a XX USD: ',freeShipping35USD)
         
 
     ''' [Paso 7.] Calculamos shippingCost y taxes '''
     shippingCost = 10   #Inicializo shippingCost en caso de que no 
     #                    se escrapee info de vendedor y despachador
 
-    if(meli_site_id == 'MLC'):
+    if (geo_result_id == 'US'):
+
+        taxes = 0.07*USD  #Impuestos nacionales, USA, aprox 7% Promedio
+
+    elif(geo_result_id == 'MLC'):
 
         if USD <= 30:
             taxes = 0       #Inicializo taxes
         else:
             taxes = USD*0.28 
 
-    elif(meli_site_id == 'MEC'):
+    elif(geo_result_id == 'MEC'):
 
         if USD <= 400:
             taxes = 0
         else:
             taxes = USD*0.15
     
-    elif(meli_site_id == 'MLA'):
+    elif(geo_result_id == 'MLA'):
          
         if USD <= 50:
             taxes = 1.9*USD
@@ -346,7 +358,7 @@ def priceCalculator(response, maxWeigth,use_locker,meli_site_id):
         else:
             taxes = 1.1*USD
 
-    elif(meli_site_id == 'MCO' or meli_site_id == 'MPE'):
+    elif(geo_result_id == 'MCO' or geo_result_id == 'MPE'):
 
         if USD <= 200:
             taxes = 0       #Inicializo taxes
@@ -354,7 +366,7 @@ def priceCalculator(response, maxWeigth,use_locker,meli_site_id):
             taxes = USD*0.27
 
 
-    elif(meli_site_id == 'MLM'):
+    elif(geo_result_id == 'MLM'):
 
         if USD <= 50:
             taxes = 0 
@@ -375,7 +387,9 @@ def priceCalculator(response, maxWeigth,use_locker,meli_site_id):
     if table == [] and USD>0 and use_locker == 1:
         #No envian a colombia, toca casillero.
         print('Toca por Casillero! ')
-        if(meli_site_id == 'MCO'):
+        if (geo_result_id == 'US'):
+            shippingCost = 0 #ASUMIMOS ENVIO GRATISSS!!!! POR AHORA!!!!!!!!!!!!!
+        elif(geo_result_id == 'MCO'):
 
             #ECUACIONES SE SACAN DE COSTO DE CASILLERO
             if USD < 200 and maxWeigth < 9:
@@ -398,15 +412,15 @@ def priceCalculator(response, maxWeigth,use_locker,meli_site_id):
                     shippingCost = 4.70*maxWeigth - 55 
                 taxes = USD*0.33
 
-        elif(meli_site_id == 'MLM'):
+        elif(geo_result_id == 'MLM'):
             USD = 0
-        elif(meli_site_id == 'MLA'):
+        elif(geo_result_id == 'MLA'):
             USD = 0
-        elif(meli_site_id == 'MLC'):
+        elif(geo_result_id == 'MLC'):
             USD = 0
-        elif(meli_site_id == 'MPE'):
+        elif(geo_result_id == 'MPE'):
             USD = 0
-        elif(meli_site_id == 'MEC'):
+        elif(geo_result_id == 'MEC'):
             USD = 0
 
     elif table != []: 

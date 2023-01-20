@@ -14,7 +14,7 @@ from datetime import datetime
 import re
 
 # Para su uso en DataSpider, enviar maxWeigth=0
-def selectores_css(response,maxWeigth,mtactive,mtauto,mtdays,use_locker,meli_site_id):
+def selectores_css(response,maxWeigth,mtactive,mtauto,mtdays,use_locker,geo_result_id,free_shipping_promo):
 
     # shipping_cost = (response.
     # css('div#exports_desktop_qualifiedBuybox_tlc_feature_div span.a-size-base::text').
@@ -32,7 +32,7 @@ def selectores_css(response,maxWeigth,mtactive,mtauto,mtdays,use_locker,meli_sit
     
     #Crear funcion para cálulo del precio
     [USD,weigth,volume,pesoVol,maxWeigth, USD_total,
-     vendedor,despachador,shippingCost,taxes] = priceCalculator(response,maxWeigth,use_locker,meli_site_id)
+     vendedor,despachador,shippingCost,taxes] = priceCalculator(response,maxWeigth,use_locker,geo_result_id, free_shipping_promo)
     
     # country , Geolocalizacion 
     try:

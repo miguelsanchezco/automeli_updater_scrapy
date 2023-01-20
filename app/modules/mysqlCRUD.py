@@ -12,6 +12,7 @@ import time
 import pymysql
 import pandas as pd
 from random import randint
+from datetime import datetime
 #Conexion a traves de clases
 class DataLogManager:
 
@@ -694,9 +695,13 @@ class DataLogManager:
         """
            
         """
+        date = str(datetime.now()).split(".")[0]
+
         sql = f"UPDATE cookies SET "
         
-        sql += f"{name_key} = '{value_key}'"
+        sql += f"{name_key} = '{value_key}', "
+
+        sql += f"date_updated = '{date}'"
             
         sql += f" WHERE idcookie  = {idcookie}"
 
