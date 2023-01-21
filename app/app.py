@@ -13,6 +13,10 @@ def handler(event, context):  #event, context
     print('event: ',event)
 
     try:
+        # primary_key = 196
+        # seller_id = 116499542
+        # pack1000 = 1
+        # quantity_pack1000 = 1
         body =  json.loads(event['Records'][0]['body'])
         print(f'event: {body}, type: {type(body)}')
         print('primary_key:',body['primary_key'])
