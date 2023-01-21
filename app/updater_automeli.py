@@ -73,6 +73,8 @@ class UpdaterSpider(scrapy.Spider):
     mtactive = 0
     mtauto = 0
     mtdays = 0
+    prime = ''
+    dias_adicionales = ''
     COOKIES = {}
     ################
 
@@ -141,6 +143,8 @@ class UpdaterSpider(scrapy.Spider):
         self.free_shipping_promo  = self.dataUser.loc[0,'free_shipping_promo']
         self.mtauto = self.dataUser.loc[0,'manufacturing_time_auto']
         self.mtdays = self.dataUser.loc[0,'manufacturing_time_days']
+        self.prime = self.dataUser.loc[0,'prime']
+        self.dias_adicionales = self.dataUser.loc[0,'dias_adicionales']
         self.use_locker =  int(self.dataUser.loc[0,'use_locker'])
         self.meli_currency = self.dataUser.loc[0,'meli_currency']
         if self.geo_result_id == 'MLM': 
@@ -299,7 +303,7 @@ class UpdaterSpider(scrapy.Spider):
         # MODULO QUE CALCULA PRECIO, AVAILABLE_Q AND MANUF_TIME
       
         [scraped_price,available_quantity,MANUFACTURING_TIME,weight,volume,pesoVol,maxWeigth,
-        USD_total,country,vendedor,despachador,shippingCost,taxes] = selectores_css(response,maxWeigth,self.mtactive,self.mtauto,self.mtdays,self.use_locker,self.geo_result_id,self.free_shipping_promo)
+        USD_total,country,vendedor,despachador,shippingCost,taxes] = selectores_css(response,maxWeigth,self.mtactive,self.mtauto,self.mtdays,self.use_locker,self.geo_result_id,self.free_shipping_promo, self.prime, self.dias_adicionales)
 
         # # price_to_meli = int(round(price_to_meli))
         to_update = {}
