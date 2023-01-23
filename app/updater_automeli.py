@@ -405,15 +405,17 @@ class UpdaterSpider(scrapy.Spider):
                 elif(available_quantity < available_quantity_anterior):
                     to_update["changed"] = '- Stock' 
 
-                if ( (MANUFACTURING_TIME_ANTERIOR != MANUFACTURING_TIME) and (to_update["changed"] == '--') ):
-                    
-                    print('int(MANUFACTURING_TIME[:2])',int(MANUFACTURING_TIME[:2]))
-                    print('int(MANUFACTURING_TIME_ANTERIOR[:2])',int(MANUFACTURING_TIME_ANTERIOR[:2]))    
-
-                    if int(MANUFACTURING_TIME[:2]) > int(MANUFACTURING_TIME_ANTERIOR[:2]):
-                        to_update["changed"] = '+ Tiempo'
-                    else:
-                        to_update["changed"] = '- Tiempo'
+                try:
+                    if ( (MANUFACTURING_TIME_ANTERIOR != MANUFACTURING_TIME) and (to_update["changed"] == '--') ):
+                        
+                        print('int(MANUFACTURING_TIME[:2])',int(MANUFACTURING_TIME[:2]))
+                        print('int(MANUFACTURING_TIME_ANTERIOR[:2])',int(MANUFACTURING_TIME_ANTERIOR[:2]))    
+                        if int(MANUFACTURING_TIME[:2]) > int(MANUFACTURING_TIME_ANTERIOR[:2]):
+                            to_update["changed"] = '+ Tiempo'
+                        else:
+                            to_update["changed"] = '- Tiempo'
+                except:
+                    print('error en: int(MANUFACTURING_TIME[:2]) or int(MANUFACTURING_TIME_ANTERIOR[:2])')        
                 
                 # Dado que ambas se cumplen!
                 print('\n @ Precio sigue igual @')
@@ -438,13 +440,16 @@ class UpdaterSpider(scrapy.Spider):
                 elif available_quantity == 0:
                     to_update["changed"] = 'Agotado'
 
-                if ( (MANUFACTURING_TIME_ANTERIOR != MANUFACTURING_TIME) and (to_update["changed"] == '--') ):
-                    print('int(MANUFACTURING_TIME[:2])',int(MANUFACTURING_TIME[:2]))
-                    print('int(MANUFACTURING_TIME_ANTERIOR[:2])',int(MANUFACTURING_TIME_ANTERIOR[:2])) 
-                    if int(MANUFACTURING_TIME[:2]) > int(MANUFACTURING_TIME_ANTERIOR[:2]):
-                        to_update["changed"] = '+ Tiempo'
-                    else:
-                        to_update["changed"] = '- Tiempo'
+                try:
+                    if ( (MANUFACTURING_TIME_ANTERIOR != MANUFACTURING_TIME) and (to_update["changed"] == '--') ):
+                        print('int(MANUFACTURING_TIME[:2])',int(MANUFACTURING_TIME[:2]))
+                        print('int(MANUFACTURING_TIME_ANTERIOR[:2])',int(MANUFACTURING_TIME_ANTERIOR[:2])) 
+                        if int(MANUFACTURING_TIME[:2]) > int(MANUFACTURING_TIME_ANTERIOR[:2]):
+                            to_update["changed"] = '+ Tiempo'
+                        else:
+                            to_update["changed"] = '- Tiempo'
+                except:
+                    print('error en: int(MANUFACTURING_TIME[:2]) or int(MANUFACTURING_TIME_ANTERIOR[:2])')
 
             
                 print("DATA DICT TO UPDATE: ", to_update)

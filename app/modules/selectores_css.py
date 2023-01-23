@@ -101,49 +101,55 @@ def selectores_css(response,maxWeigth,mtactive,mtauto,mtdays,use_locker,geo_resu
                             # No disponible
 
     #DETERMINAMOS MANUFACTURING TIME ---------------------------------------------------------------------------------------
-    #delivery_message = response.css('div#mir-layout-DELIVERY_BLOCK-slot-PRIMARY_DELIVERY_MESSAGE_LARGE span::text').getall()
-    #print(f'delivery_message {delivery_message}')
-    delivery_message = response.css('div#deliveryBlockMessage span.a-text-bold::text').getall()
-    print(f'delivery_message {delivery_message}')
-    message = ''
+    if int(prime) == 0:
+        delivery_message = response.css('div#mir-layout-DELIVERY_BLOCK-slot-PRIMARY_DELIVERY_MESSAGE_LARGE span::text').getall()
+        print(f'NO PRIME: delivery_message {delivery_message}')
+       
+    else: 
+        delivery_message = response.css('div#deliveryBlockMessage span.a-text-bold::text').getall()
+        print(f'PRIME: delivery_message {delivery_message}')
+
 
     if int(prime) == 1:
         if len(delivery_message) > 1:
             delivery_message = delivery_message[1:]
             print(f'delivery_message prime {delivery_message}')
-            message = delivery_message[0]
-    else:
-        if len(delivery_message) > 1:
-            message = delivery_message[0]
             
     meses = ['ene','feb','marz','abr','may','jun','jul','ago','sep','oct','nov','dic']
     
-    
-    if message != '':
-    # for message in delivery_message:
-        for index, mes in enumerate(meses):
-            #print(f'mes: {mes} in {message}')
-            if mes.lower() in message.lower():
-                print('message dayNumber: ', message.lower())
-                dayNumber =  re.search('\d+',message) 
-                print('dayNumber: ',dayNumber) 
-                try:
-                    dayNumber = dayNumber.group(0)
-                except:
-                    dayNumber = '30' #Inventamos
-                    
-                print(f'Encontrado!! mes: {index+1}, dia: {dayNumber}')
-                print(f'dias adicionales: {dias_adicionales}')
-                currenMonth = datetime.now().month
-                currenDayNumber = datetime.now().day
-                if currenMonth == index+1:
-                    MANUFACTURING_TIME = str(int(dayNumber) - int(currenDayNumber) + int(dias_adicionales) ) + ' dias'
-                    print(f'MANUFACTURING_TIME  {MANUFACTURING_TIME}')
-                else:
-                    MANUFACTURING_TIME = str((31 - int(currenDayNumber)) + int(dayNumber) + int(dias_adicionales) ) + ' dias'
-                    print(f'MANUFACTURING_TIME  {MANUFACTURING_TIME}')
-
-                break
+    # try:
+    #     message = delivery_message[0]
+    # except:
+    #     message = ''
+    found = 0
+    # if message != '':
+    for message in delivery_message:
+        if found == 0:
+            for index, mes in enumerate(meses):
+                #print(f'mes: {mes} in {message}')
+                if mes.lower() in message.lower():
+                    print('message dayNumber: ', message.lower())
+                    dayNumber =  re.search('\d+',message) 
+                    print('dayNumber: ',dayNumber) 
+                    try:
+                        dayNumber = dayNumber.group(0)
+                    except:
+                        dayNumber = '30' #Inventamos
+                        
+                    print(f'Encontrado!! mes: {index+1}, dia: {dayNumber}')
+                    print(f'dias adicionales: {dias_adicionales}')
+                    currentMonth = datetime.now().month
+                    monthDiff = index+1 - currentMonth
+                    daysAcum = 31 * monthDiff #util si hay 2 o mas meses de dif.
+                    currenDayNumber = datetime.now().day
+                    if currentMonth == index+1:
+                        MANUFACTURING_TIME = str(int(dayNumber) - int(currenDayNumber) + int(dias_adicionales) ) + ' dias'
+                        print(f'MANUFACTURING_TIME  {MANUFACTURING_TIME}') 
+                    else:
+                        MANUFACTURING_TIME = str((daysAcum - int(currenDayNumber)) + int(dayNumber) + int(dias_adicionales) ) + ' dias'
+                        print(f'MANUFACTURING_TIME  {MANUFACTURING_TIME}') 
+                    found = 1
+                    break
 
 
     if mtactive == 0:
