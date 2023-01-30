@@ -406,7 +406,7 @@ class UpdaterSpider(scrapy.Spider):
                     to_update["changed"] = '- Stock' 
 
                 try:
-                    if ( (MANUFACTURING_TIME_ANTERIOR != MANUFACTURING_TIME) and (to_update["changed"] == '--') ):
+                    if ( (MANUFACTURING_TIME_ANTERIOR != MANUFACTURING_TIME) and (to_update["changed"] == '--') and (available_quantity != 0)):
                         
                         print('int(MANUFACTURING_TIME[:2])',int(MANUFACTURING_TIME[:2]))
                         print('int(MANUFACTURING_TIME_ANTERIOR[:2])',int(MANUFACTURING_TIME_ANTERIOR[:2]))    
@@ -441,7 +441,7 @@ class UpdaterSpider(scrapy.Spider):
                     to_update["changed"] = 'Agotado'
 
                 try:
-                    if ( (MANUFACTURING_TIME_ANTERIOR != MANUFACTURING_TIME) and (to_update["changed"] == '--') ):
+                    if ( (MANUFACTURING_TIME_ANTERIOR != MANUFACTURING_TIME) and (to_update["changed"] == '--') and (available_quantity != 0)):
                         print('int(MANUFACTURING_TIME[:2])',int(MANUFACTURING_TIME[:2]))
                         print('int(MANUFACTURING_TIME_ANTERIOR[:2])',int(MANUFACTURING_TIME_ANTERIOR[:2])) 
                         if int(MANUFACTURING_TIME[:2]) > int(MANUFACTURING_TIME_ANTERIOR[:2]):
