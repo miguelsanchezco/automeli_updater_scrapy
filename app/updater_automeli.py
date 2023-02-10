@@ -308,8 +308,10 @@ class UpdaterSpider(scrapy.Spider):
         # # price_to_meli = int(round(price_to_meli))
         to_update = {}
         
+        if 'no-disponible.png' in self.df.loc[index, "image"]:
+            to_update['image'] = NewImagen
 
-        if(NewImagen != self.df.loc[index, "image"]):
+        elif(NewImagen != self.df.loc[index, "image"]):
             to_update['image_changed'] = 1
         else:
             to_update['image_changed'] = 0
