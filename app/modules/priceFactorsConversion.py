@@ -1,6 +1,7 @@
 
 from modules.mysqlCRUD import DataLogManager
 import math
+import json
 
 def priceFactorsConversion(usd_total,seller_id,databaseName,meli_site_id):
     
@@ -8,25 +9,44 @@ def priceFactorsConversion(usd_total,seller_id,databaseName,meli_site_id):
     objectDataLog = DataLogManager(databaseName)
     dataUser = objectDataLog.extractUserData(seller_id)  #Trae parameters
     TRM  = dataUser.loc[0,'trm']
-    factor_range_1 = float(dataUser.loc[0,'factor_range_1'])
-    factor_range_2 = float(dataUser.loc[0,'factor_range_2'])
+    jsonstring = dataUser.loc[0,'json']
+    # factor_range_1 = float(dataUser.loc[0,'factor_range_1'])
+    # factor_range_2 = float(dataUser.loc[0,'factor_range_2'])
+    listJson = json.loads(jsonstring)
  
-    if usd_total < factor_range_1:
-        FACTOR = dataUser.loc[0, "factor_high_meli"]  # 1 - 49.99 usd_total
-        FACTOR_MSHOPS = dataUser.loc[0, "factor_high_mshops"]
-    elif usd_total >= factor_range_1 and usd_total < factor_range_2:
-        FACTOR = dataUser.loc[0, "factor_medium_meli"]   #50 - 99.99 usd_total
-        FACTOR_MSHOPS = dataUser.loc[0, "factor_medium_mshops"]
-    elif usd_total >= factor_range_2:
-        FACTOR = dataUser.loc[0, "factor_low_meli"]   # >100 USD
-        FACTOR_MSHOPS = dataUser.loc[0, "factor_low_mshops"]
+    # if usd_total < factor_range_1:
+    #     FACTOR = dataUser.loc[0, "factor_high_meli"]  # 1 - 49.99 usd_total
+    #     FACTOR_MSHOPS = dataUser.loc[0, "factor_high_mshops"]
+    # elif usd_total >= factor_range_1 and usd_total < factor_range_2:
+    #     FACTOR = dataUser.loc[0, "factor_medium_meli"]   #50 - 99.99 usd_total
+    #     FACTOR_MSHOPS = dataUser.loc[0, "factor_medium_mshops"]
+    # elif usd_total >= factor_range_2:
+    #     FACTOR = dataUser.loc[0, "factor_low_meli"]   # >100 USD
+    #     FACTOR_MSHOPS = dataUser.loc[0, "factor_low_mshops"]
+    FACTOR = ''
+    FACTOR_MSHOPS = ''
+    for item in listJson:
+        
+        if usd_total>=item['min'] and usd_total<item['max']:
+            print(item)
+            FACTOR = (item['meli']/100)+1
+            FACTOR_MSHOPS = (item['mshops']/100)+1
+            meli_price = usd_total * FACTOR * TRM
+            mshops_price = usd_total * FACTOR_MSHOPS * TRM
+            break
+        
+    if FACTOR == '' and FACTOR_MSHOPS == '':
+        FACTOR = 2
+        FACTOR_MSHOPS = 2
+        meli_price = usd_total * FACTOR * TRM
+        mshops_price = usd_total * FACTOR_MSHOPS * TRM
     
     print("FACTOR_MSHOPS: ", FACTOR_MSHOPS)
 
     print(f'meli_priceeee:  USD {usd_total} ,FACTOR {FACTOR} , TRM {TRM}')
 
-    meli_price =  usd_total * FACTOR * TRM
-    mshops_price = usd_total * FACTOR_MSHOPS * TRM
+    # meli_price =  usd_total * FACTOR * TRM
+    # mshops_price = usd_total * FACTOR_MSHOPS * TRM
     
     print(f'meli_priceeee antes redondeo: {meli_price}')
     
