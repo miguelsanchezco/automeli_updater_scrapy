@@ -147,6 +147,8 @@ class UpdaterSpider(scrapy.Spider):
         self.dias_adicionales = self.dataUser.loc[0,'dias_adicionales']
         self.use_locker =  int(self.dataUser.loc[0,'use_locker'])
         self.meli_currency = self.dataUser.loc[0,'meli_currency']
+        self.stock_quantity_value =  int(self.dataUser.loc[0,'stock_quantity_value'])
+        print('stock_quantity_value:',self.stock_quantity_value)
         if self.geo_result_id == 'MLM': 
             self.countryName = 'México Mexico'
         elif self.geo_result_id == 'MCO':
@@ -303,7 +305,7 @@ class UpdaterSpider(scrapy.Spider):
         # MODULO QUE CALCULA PRECIO, AVAILABLE_Q AND MANUF_TIME
       
         [scraped_price,available_quantity,MANUFACTURING_TIME,weight,volume,pesoVol,maxWeigth,
-        USD_total,country,vendedor,despachador,shippingCost,taxes] = selectores_css(response,maxWeigth,self.mtactive,self.mtauto,self.mtdays,self.use_locker,self.geo_result_id,self.free_shipping_promo, self.prime, self.dias_adicionales)
+        USD_total,country,vendedor,despachador,shippingCost,taxes] = selectores_css(response,maxWeigth,self.mtactive,self.mtauto,self.mtdays,self.use_locker,self.geo_result_id,self.free_shipping_promo, self.prime,self.dias_adicionales,self.stock_quantity_value)
 
         # # price_to_meli = int(round(price_to_meli))
         to_update = {}
@@ -394,7 +396,7 @@ class UpdaterSpider(scrapy.Spider):
             #print(f'PRECIOOOO NUEVO {sku}: {scraped_price}\n\n\n')
             
             #GUARDO EN MONGODB
-            mongoSaveProduct(sku ,'amazon.com', self.meli_site_id, self.seller_id,  meli_sale_price, meli_regular_price, to_update["scraped_price"], available_quantity, to_update["shipping_cost"] ,to_update["taxes"] , '' , {}, '', '', self.geo_result_id )
+            mongoSaveProduct(sku ,'amazon.com', self.meli_site_id, self.seller_id,  meli_sale_price, meli_regular_price, to_update["scraped_price"], available_quantity, to_update["shipping_cost"] ,to_update["taxes"] , '' , {}, '', '', self.geo_result_id,to_update)
 
             if (USD_total == total_price_anterior): 
 

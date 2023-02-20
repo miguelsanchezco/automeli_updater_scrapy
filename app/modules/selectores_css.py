@@ -14,7 +14,7 @@ from datetime import datetime
 import re
 
 # Para su uso en DataSpider, enviar maxWeigth=0
-def selectores_css(response,maxWeigth,mtactive,mtauto,mtdays,use_locker,geo_result_id,free_shipping_promo,prime,dias_adicionales):
+def selectores_css(response,maxWeigth,mtactive,mtauto,mtdays,use_locker,geo_result_id,free_shipping_promo,prime,dias_adicionales,stock_quantity_value):
 
     # shipping_cost = (response.
     # css('div#exports_desktop_qualifiedBuybox_tlc_feature_div span.a-size-base::text').
@@ -93,7 +93,7 @@ def selectores_css(response,maxWeigth,mtactive,mtauto,mtdays,use_locker,geo_resu
                     else:
                         match = re.search("Disponible.",stock)
                         if match:
-                            available_quantity = 3
+                            available_quantity = stock_quantity_value
                             MANUFACTURING_TIME = '15 dias'  ## null
                         else:
                             available_quantity = 0

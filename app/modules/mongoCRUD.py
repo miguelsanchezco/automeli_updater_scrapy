@@ -2,7 +2,7 @@
 from datetime import datetime
 from pymongo import MongoClient
 
-def mongoSaveProduct(sku ,amazon_site, site_id, seller_id, meli_sale_price, meli_regular_price, scraped_price, stock_quantity, shippingCost, taxes, title, images, id_meli_category, currencyMeli, geo_result_id):
+def mongoSaveProduct(sku ,amazon_site, site_id, seller_id, meli_sale_price, meli_regular_price, scraped_price, stock_quantity, shippingCost, taxes, title, images, id_meli_category, currencyMeli, geo_result_id, to_update):
 #   mongoSaveProduct(sku ,'amazon.com', self.meli_site_id, self.seller_id,  meli_price, scraped_price, available_quantity, shippingCost ,taxes , '' , {}, '', '' )
     client = MongoClient("mongodb+srv://justmarketco:IAtd0PM41q9YBPUL@automelimong0.etafi.mongodb.net/automeli?retryWrites=true&w=majority")
     db = client['automeli']
@@ -26,7 +26,15 @@ def mongoSaveProduct(sku ,amazon_site, site_id, seller_id, meli_sale_price, meli
 
     # images = listImages
 
-
+    #DOCUMENTO TIPO 0 EVIAR IMAGEN PRODUCTOS CARGADOS CON CSV
+    try:
+        if to_update['image']:
+            print(f"to_update['image']: {to_update['image']}")
+            images = {'source': to_update['image']}
+            query = {"sku":sku}
+            response = collectionProducts.update_one(query,{"$addToSet":{"pictures":images}})
+    except:
+        print('No es Producto Cargado Sin Imagen')   
     #DOCUMENTO A INSERTAR TIPO 1
     # newDocument =  {"sku":sku,
     #                 "title":title,
