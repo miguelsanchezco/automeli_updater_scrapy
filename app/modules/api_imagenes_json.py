@@ -30,7 +30,7 @@ def img_depuration(data_to_yield, response):  #data_to_yield,response
     imgQuantity = len(response.css('div#altImages li.a-spacing-small.item').getall())
 
 
-    #print(f'imgQuantity: {imgQuantity} !!!')
+    print(f'imgQuantity: {imgQuantity} !!!')
     # # if imgQuantity == 0:
     # #     #OBTENGO LA CANTIDAD DE IMAGENES QUE TIENE EL PRODUCTO SELECTOR 2
     # #     ##altImages > ul > li:nth-child(4)
@@ -42,22 +42,26 @@ def img_depuration(data_to_yield, response):  #data_to_yield,response
     #VERIFICAMOS LA EXISTENCIA DE VIDEO
     #Este selector captura las imagenes
     IMGS = response.css('div#altImages li.a-spacing-small.item span img::attr(src)').getall()
+    print(f'IMGS: {IMGS}')
     if imgQuantity >= 1 and len(IMGS)>=1:
-        match1 = re.search('play-button',IMGS[-1]) 
-        match2 = re.search('play-icon',IMGS[-1]) 
-        #buscamos la palabra play-button en la url de la ultima imagen
-        if match1 or match2: 
-            #si se encuentra video, se disminuye en 1 imgQuantity
-            imgQuantity = imgQuantity - 1
-            if imgQuantity >=2 and len(IMGS)>=2:
-                match1 = re.search('play-button',IMGS[-2])
-                match2 = re.search('play-icon',IMGS[-2]) 
-                #buscamos la palabra play-button en la penultima imagen
-                if match1 or match2: 
-                    imgQuantity = imgQuantity - 1 
-                    #si se encuentra video, se disminuye en 2 la cantidad de imagenes
+        # # # match1 = re.search('play-button',IMGS[-1]) 
+        # # # match2 = re.search('play-icon',IMGS[-1]) 
+        # # # #buscamos la palabra play-button en la url de la ultima imagen
+        # # # if match1 or match2: 
+        # # #     #si se encuentra video, se disminuye en 1 imgQuantity
+        # # #     imgQuantity = imgQuantity - 1
+        # # #     if imgQuantity >=2 and len(IMGS)>=2:
+        # # #         match1 = re.search('play-button',IMGS[-2])
+        # # #         match2 = re.search('play-icon',IMGS[-2]) 
+        # # #         #buscamos la palabra play-button en la penultima imagen
+        # # #         if match1 or match2: 
+        # # #             imgQuantity = imgQuantity - 1 
+        # # #             #si se encuentra video, se disminuye en 2 la cantidad de imagenes
+        for image in IMGS:
+            if 'play-button' in image or 'play-icon' in image:
+                imgQuantity = imgQuantity - 1 
                 
-    
+    print(f'imgQuantityCorregido: {imgQuantity} !!!')
     #Inicializo las imagenes para yield
     for i in range(maxImgQuantity):
         indice = 'img' + str(i) 
@@ -70,33 +74,51 @@ def img_depuration(data_to_yield, response):  #data_to_yield,response
     #(?<="hiRes":"https:\/\/images-na\.ssl-images-amazon\.com\/images\/I\/)(.*?)(?=\.) #vieja expresion r
     #(?<="hiRes":"https:\/\/m\.media-amazon\.com\/images\/I\/)(.*?)(?=\.)
     #m.media-amazon.com
-    listSelectores = ['(?<="hiRes":"https:\/\/m\.media-amazon\.com\/images\/W\/)(.*?)(?=\.)',
-                      '(?<="hiRes":"https:\/\/m\.media-amazon\.com\/images\/I\/)(.*?)(?=\.)',
-                      '(?<="hiRes":"https:\/\/images-na\.ssl-images-amazon\.com\/images\/I\/)(.*?)(?=\.)',
-                      '(?<="hiRes":"https:\/\/images-na\.ssl-images-amazon\.com\/images\/W\/)(.*?)(?=\.)', ]
-    contador = 0
-    winner = ''
-    for selector in listSelectores:
-        imgs = re.findall(selector,response.text)
-        print(f'selector : {selector} ',)
-        if imgs == []:
-            continue
-        else:
-            print(f'imgs despues de re.findall : {len(imgs)}')
-            if contador == 0:
-                winner = selector
-                imgsCountAnterior = len(imgs)
-            else:
-                if len(imgs)>imgsCountAnterior:
-                    winner = selector
-                    imgsCountAnterior = len(imgs)
-                else:
-                    continue
-            contador = contador +1
-    #print(f'winnerSector: {winner}')
-    if winner != '':
-        imgs = re.findall(winner,response.text)
-    #print(f'imgs using winnerSector: {imgs}')
+    selectorlarge = '(?<="large":)(.*?)(?=,)'
+    print('...large...')
+    imgslarge = re.findall(selectorlarge,response.text)
+    for large in imgslarge:
+        print(large)
+        print('_____')
+    selectorhiRes = '(?<="hiRes":)(.*?)(?=,)'
+                    # [ '(?<="hiRes":"https:\/\/m\.media-amazon\.com\/images\/W\/)(.*?)(?=\.)',
+                    #   '(?<="hiRes":"https:\/\/m\.media-amazon\.com\/images\/I\/)(.*?)(?=\.)',
+                    #   '(?<="hiRes":"https:\/\/images-na\.ssl-images-amazon\.com\/images\/I\/)(.*?)(?=\.)',
+                    #   '(?<="hiRes":"https:\/\/images-na\.ssl-images-amazon\.com\/images\/W\/)(.*?)(?=\.)', 
+                    #  ]
+    # contador = 0
+    # winner = ''
+    # for selector in listSelectores:
+    #     imgs = re.findall(selector,response.text)
+    #     print(f'selector : {selector} ',)
+    #     if imgs == []:
+    #         continue
+    #     else:
+    #         print(f'imgs despues de re.findall : {len(imgs)}')
+    #         if contador == 0:
+    #             winner = selector
+    #             imgsCountAnterior = len(imgs)
+    #         else:
+    #             if len(imgs)>imgsCountAnterior:
+    #                 winner = selector
+    #                 imgsCountAnterior = len(imgs)
+    #             else:
+    #                 continue
+    #         contador = contador +1
+    # #print(f'winnerSector: {winner}')
+    # if winner != '':
+    imgshiRes = re.findall(selectorhiRes,response.text)
+    # print(f'imgs using winnerSector: {imgs}')
+    print('...hiRes...')
+    for index,hires in enumerate(imgshiRes):
+        print(hires)
+        if "null" in hires:
+            imgshiRes[index] = imgslarge[index]
+        print('_____')
+        imgshiRes[index] = imgshiRes[index].split('.')[-3].split('/')[-1]
+
+    imgs = imgshiRes
+    print(f'imgsCorregidas: {imgs}')
     # # # imgs = re.findall('(?<="hiRes":"https:\/\/m\.media-amazon\.com\/images\/I\/)(.*?)(?=\.)',response.text)
     # # # #print(imgs)
     # # # if imgs == []:
