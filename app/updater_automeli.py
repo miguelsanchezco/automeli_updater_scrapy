@@ -83,10 +83,10 @@ class UpdaterSpider(scrapy.Spider):
 
         'DOWNLOAD_TIMEOUT': 30, #30 segundos 
         # 'HTTPCACHE_ENABLED':False,
-        'CONCURRENT_REQUESTS' : 15, #ScraperAPI Configuration
+        'CONCURRENT_REQUESTS' : 5, #ScraperAPI Configuration
         'RETRY_TIMES': 3, # ScraperAPI Recommendation = 5
         'ROBOTSTXT_OBEY' : False,
-        'CONCURRENT_REQUESTS_PER_IP' : 15  
+        'CONCURRENT_REQUESTS_PER_IP' : 5  
     }
 
     def __init__(self, seller_id='', pack1000='', quantity_pack1000='',*args, **kwargs):
