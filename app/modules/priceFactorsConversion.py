@@ -54,7 +54,7 @@ def priceFactorsConversion(usd_total,seller_id,databaseName,meli_site_id):
     if meli_site_id == 'MCO' or meli_site_id=='MLC' :
         decima = 10 #colombia
     else:
-        decima = 1 #argentina, mexico, ecuador
+        decima = 1 #argentina, mexico, ecuador, Perú
 
     if meli_price < 100:
         decima = 0,1  #modena dolares. ejemplo ecuador

@@ -157,6 +157,8 @@ class UpdaterSpider(scrapy.Spider):
             self.countryName = 'Argentina'
         elif self.geo_result_id == 'MLC':
             self.countryName = 'Chile'
+        elif self.geo_result_id == 'MPE':
+            self.countryName = 'Perú'
         elif self.geo_result_id == 'MEC':
             self.countryName = 'Ecuador'
         else:
