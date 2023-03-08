@@ -10,6 +10,7 @@
 '''
 
 from modules.priceCalculator import priceCalculator
+from modules.numero_dias_mes import numero_dias_mes
 from datetime import datetime
 import re
 
@@ -135,14 +136,19 @@ def selectores_css(response,maxWeigth,mtactive,mtauto,mtdays,use_locker,geo_resu
                         dayNumber = dayNumber.group(0)
                     except:
                         dayNumber = '30' #Inventamos
-                        
-                    print(f'Encontrado!! mes: {index+1}, dia: {dayNumber}')
+                    monthShipping = index + 1    
+                    print(f'Mes Shipping: {monthShipping}, dia: {dayNumber}')
                     print(f'dias adicionales: {dias_adicionales}')
                     currentMonth = datetime.now().month
-                    monthDiff = index+1 - currentMonth
-                    daysAcum = 31 * monthDiff #util si hay 2 o mas meses de dif.
+                    print(f'current Month: {currentMonth}')
+                    currentYear = datetime.now().year
+                    print(f'current Year: {currentYear}')
+                    daysOfcurrentMonth = numero_dias_mes(currentMonth,currentYear) 
+                    print(f'daysOfcurrentMonth: {daysOfcurrentMonth}')
+                    monthDiff = monthShipping - currentMonth
+                    daysAcum = daysOfcurrentMonth * monthDiff #util si hay 2 o mas meses de dif.
                     currenDayNumber = datetime.now().day
-                    if currentMonth == index+1:
+                    if currentMonth == monthShipping:
                         MANUFACTURING_TIME = str(int(dayNumber) - int(currenDayNumber) + int(dias_adicionales) ) + ' dias'
                         print(f'MANUFACTURING_TIME  {MANUFACTURING_TIME}') 
                     else:
