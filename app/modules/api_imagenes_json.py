@@ -36,8 +36,10 @@ def img_depuration(data_to_yield, response):  #data_to_yield,response
     # #     ##altImages > ul > li:nth-child(4)
     # #     imgQuantity = len(response.css('div#altImages li.a-spacing-small.item').getall())
 
-    if imgQuantity > maxImgQuantity  or imgQuantity == 0: 
+    if imgQuantity > maxImgQuantity : 
         imgQuantity = maxImgQuantity
+    elif imgQuantity == 0:
+        imgQuantity = 4
     
     #VERIFICAMOS LA EXISTENCIA DE VIDEO
     #Este selector captura las imagenes
@@ -75,11 +77,11 @@ def img_depuration(data_to_yield, response):  #data_to_yield,response
     #(?<="hiRes":"https:\/\/m\.media-amazon\.com\/images\/I\/)(.*?)(?=\.)
     #m.media-amazon.com
     selectorlarge = '(?<="large":)(.*?)(?=,)'
-    print('...large...')
+    # print('...large...')
     imgslarge = re.findall(selectorlarge,response.text)
-    for large in imgslarge:
-        print(large)
-        print('_____')
+    # for large in imgslarge:
+    #     print(large)
+    #     print('_____')
     selectorhiRes = '(?<="hiRes":)(.*?)(?=,)'
                     # [ '(?<="hiRes":"https:\/\/m\.media-amazon\.com\/images\/W\/)(.*?)(?=\.)',
                     #   '(?<="hiRes":"https:\/\/m\.media-amazon\.com\/images\/I\/)(.*?)(?=\.)',
@@ -110,7 +112,7 @@ def img_depuration(data_to_yield, response):  #data_to_yield,response
     imgshiRes = re.findall(selectorhiRes,response.text)
     # print(f'imgs using winnerSector: {imgs}')
     print('...hiRes...')
-    for index,hires in enumerate(imgshiRes):
+    for index,hires in enumerate(imgshiRes[:7]):
         print(hires)
         if "null" in hires:
             imgshiRes[index] = imgslarge[index]
@@ -118,7 +120,7 @@ def img_depuration(data_to_yield, response):  #data_to_yield,response
         imgshiRes[index] = imgshiRes[index].split('.')[-3].split('/')[-1]
 
     imgs = imgshiRes
-    print(f'imgsCorregidas: {imgs}')
+    print(f'imgsCorregidas: {imgs[:7]}')
     # # # imgs = re.findall('(?<="hiRes":"https:\/\/m\.media-amazon\.com\/images\/I\/)(.*?)(?=\.)',response.text)
     # # # #print(imgs)
     # # # if imgs == []:
